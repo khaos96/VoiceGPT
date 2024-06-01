@@ -4,6 +4,31 @@ import speech_recognition as sr
 import sys, whisper, warnings, time, openai
 
 # Initialize the OpenAI API
+openai.api_key = ""
+
+r = sr.Recognizer()
+base_model = whisper.load_model('base')
+source = sr.Microphone() 
+warnings.filterwarnings("ignore", category=UserWarning, module='whisper.transcribe', lineno=114)
+
+if sys.platform != 'darwin':
+    import pyttsx3
+    engine = pyttsx3.init()
+
+def speak(text):
+    if sys.platform == 'darwin':
+        ALLOWED_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,?!-_$:+-/ ")
+        clean_text = ''.join(c for c in text if c in ALLOWED_CHARS)
+        system(f"say '{clean_text}'")
+    else:
+        engine.say(text)
+        engine.runAndWait()
+from os import system
+from EdgeGPT.EdgeUtils import Query
+import speech_recognition as sr
+import sys, whisper, warnings, time, openai
+
+# Initialize the OpenAI API
 openai.api_key = "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"
 
 r = sr.Recognizer()
@@ -29,7 +54,7 @@ def prompt_gpt():
         try:
             print("Processing GPT prompt...")
             with source as s:
-                r.adjust_for_ambient_noise(s, duration=0.5)
+                r.adjust_for_ambient_noise(s, duration=2)
                 audio = r.listen(s)
             with open("prompt.wav", "wb") as f:
                 f.write(audio.get_wav_data())
